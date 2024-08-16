@@ -9,16 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recycler_view.R;
-import com.example.recycler_view.model.Filme;
+import com.example.recycler_view.model.Compromisso;
 
 import java.util.List;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
-    private List<Filme> listaFilmes;
+    private List<Compromisso> listaCompromissos;
 
-    public Adapter(List<Filme> lista){
-        this.listaFilmes = lista;
+    public Adapter(List<Compromisso> lista){
+        this.listaCompromissos = lista;
     }
 
     @NonNull
@@ -30,26 +30,26 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Filme filme = listaFilmes.get(position);
-        holder.titulo.setText(filme.getTituloFilme());
-        holder.ano.setText(filme.getAno());
-        holder.genero.setText(filme.getGenero());
+        Compromisso compromissoItem = listaCompromissos.get(position);
+        holder.titulo.setText(compromissoItem.getTitulo());
+        holder.data.setText(compromissoItem.getData());
+        holder.horario.setText(compromissoItem.getHorario());
     }
 
     @Override
     public int getItemCount() {
-        return listaFilmes.size();
+        return listaCompromissos.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView titulo;
-        TextView ano;
-        TextView genero;
+        TextView data;
+        TextView horario;
         public MyViewHolder(@NonNull View itemView){
             super(itemView);
             titulo = itemView.findViewById(R.id.textViewTitulo);
-            ano = itemView.findViewById(R.id.textViewAno);
-            genero = itemView.findViewById(R.id.textViewGenero);
+            data = itemView.findViewById(R.id.textViewData);
+            horario = itemView.findViewById(R.id.textViewHorario);
         }
     }
 
