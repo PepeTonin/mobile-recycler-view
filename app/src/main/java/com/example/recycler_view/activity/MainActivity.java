@@ -8,12 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.recycler_view.R;
 import com.example.recycler_view.adapter.Adapter;
 import com.example.recycler_view.model.Compromisso;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,12 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private List<Compromisso> listaCompromissos = new ArrayList<>();
+    private TextInputEditText editTextTitulo;
+    private TextInputEditText editTextLocal;
+    private TextInputEditText editTextData;
+    private TextInputEditText editTextHorario;
+    private Adapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +38,12 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
 
-        Adapter adapter = new Adapter(listaCompromissos);
+        editTextTitulo = findViewById(R.id.editTextTitulo);
+        editTextLocal = findViewById(R.id.editTextLocal);
+        editTextData = findViewById(R.id.editTextData);
+        editTextHorario = findViewById(R.id.editTextHorario);
+
+        adapter = new Adapter(listaCompromissos);
 
         RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -62,6 +75,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void salvarCompromisso(View view) {
+        String titulo =  editTextTitulo.getText().toString().trim();
+        String local = editTextLocal.getText().toString();
+        String data = editTextData.getText().toString();
+        String horario = editTextHorario.getText().toString();
 
+        if (titulo == "" || local == "" || data == "" || horario == "") {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Insira dados validos",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
+
+        Compromisso compromisso = new Compromisso(titulo, local, data, horario);
+
+        listaCompromissos.add(compromisso);
+        this.adapter.notifyDataSetChanged();
+
+        editTextTitulo.setText("");
+        editTextLocal.setText("");
+        editTextData.setText("");
+        editTextHorario.setText("");
     }
 }
