@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,6 +20,9 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,31 +76,77 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }));
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        if (sharedPreferences.contains("compromissos")) {
+            String json = sharedPreferences.getString("compromissos", null);
+            if (json != null) {
+                try {
+                    JSONArray jsonArray = new JSONArray(json);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Compromisso compromisso = new Compromisso();
+                        compromisso.setTitulo(jsonObject.getString("titulo"));
+                        compromisso.setData(jsonObject.getString("data"));
+                        compromisso.setHorario(jsonObject.getString("horario"));
+                        compromisso.setLocal(jsonObject.getString("local"));
+                        listaCompromissos.add(compromisso);
+                    }
+                    this.adapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void salvarCompromisso(View view) {
-        String titulo =  editTextTitulo.getText().toString().trim();
+        String titulo = editTextTitulo.getText().toString();
         String local = editTextLocal.getText().toString();
         String data = editTextData.getText().toString();
         String horario = editTextHorario.getText().toString();
 
-        if (titulo == "" || local == "" || data == "" || horario == "") {
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Insira dados validos",
-                    Toast.LENGTH_LONG
-            ).show();
+        if (titulo.matches("") || local.matches("") || data.matches("") || horario.matches("")) {
+            Toast.makeText(getApplicationContext(), "Insira dados válidos", Toast.LENGTH_LONG).show();
             return;
         }
 
-        Compromisso compromisso = new Compromisso(titulo, local, data, horario);
+        Compromisso compromisso = new Compromisso();
+        compromisso.setTitulo(titulo);
+        compromisso.setLocal(local);
+        compromisso.setData(data);
+        compromisso.setHorario(horario);
 
         listaCompromissos.add(compromisso);
         this.adapter.notifyDataSetChanged();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        String json = serializeListToJson(listaCompromissos);
+        editor.putString("compromissos", json);
+        editor.apply();
 
         editTextTitulo.setText("");
         editTextLocal.setText("");
         editTextData.setText("");
         editTextHorario.setText("");
+    }
+
+    public String serializeListToJson(List<Compromisso> lista) {
+        JSONArray jsonArray = new JSONArray();
+        for (Compromisso compromisso : lista) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("titulo", compromisso.getTitulo());
+                jsonObject.put("data", compromisso.getData());
+                jsonObject.put("horario", compromisso.getHorario());
+                jsonObject.put("local", compromisso.getLocal());
+                jsonArray.put(jsonObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return jsonArray.toString();
     }
 }

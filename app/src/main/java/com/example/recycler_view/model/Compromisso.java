@@ -6,13 +6,6 @@ public class Compromisso {
     private String data;
     private String horario;
 
-    public Compromisso(String titulo, String local, String data, String horario) {
-        this.titulo = titulo;
-        this.local = local;
-        this.data = data;
-        this.horario = horario;
-    }
-
     public String getTitulo() {
         return titulo;
     }
